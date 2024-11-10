@@ -15,4 +15,13 @@ public enum CommandType {
         return description;
     }
 
+    public static CommandType fromDescription(String description) {
+        for (CommandType value : CommandType.values()) {
+            if (value.getDescription().equalsIgnoreCase(description)) {
+                return value;
+            }
+        }
+        throw new IllegalArgumentException("No enum constant with description " + description);
+    }
+
 }
