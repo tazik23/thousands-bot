@@ -2,7 +2,7 @@ package org.example.Handlers.CommandHandler;
 
 public enum CommandType {
     START ("/start"),
-    TYSIACHI ("/tysiachi");
+    THOUSANDS ("/thousands");
 
     private final String description;
 
