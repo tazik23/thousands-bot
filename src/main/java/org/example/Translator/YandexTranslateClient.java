@@ -19,7 +19,7 @@ public class YandexTranslateClient {
 
     public TranslationResponse getTranslate(List<String> texts) throws IOException {
         OkHttpClient client = new OkHttpClient();
-        
+
         RequestBody body = formRequestBody(texts);
 
         Request request = new Request.Builder()
@@ -39,12 +39,10 @@ public class YandexTranslateClient {
         catch (IOException e) {
             //todo: add logging
         }
-
         return null;
     }
 
-    private RequestBody formRequestBody(List<String> texts) throws JsonProcessingException
-    {
+    private RequestBody formRequestBody(List<String> texts) throws JsonProcessingException {
         String json = objectMapper.writeValueAsString(new TranslationRequest(folderId, texts, targetLanguage));
         MediaType JSON = MediaType.get("application/json; charset=utf-8");
         return RequestBody.create(json, JSON);
