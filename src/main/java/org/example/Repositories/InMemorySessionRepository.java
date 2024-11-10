@@ -25,7 +25,7 @@ public class InMemorySessionRepository implements ISessionRepository{
 
     @Override
     public void deleteSession(Session session) {
-
+        sessions.remove(session.getId());
     }
 
     @Override
