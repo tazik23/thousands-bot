@@ -29,7 +29,7 @@ public class InMemorySessionRepository implements ISessionRepository{
     }
 
     @Override
-    public Session getSessionById(long Id) {
-        return null;
+    public Session getSessionById(long id) {
+        return sessions.get(id);
     }
 }
