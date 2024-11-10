@@ -19,4 +19,9 @@ public class DocxWriter {
         XWPFParagraph paragraph = document.createParagraph();
         paragraph.createRun().setText(text);
     }
+
+    public void save() throws IOException {
+        document.write(fos);
+        document.close();
+    }
 }
