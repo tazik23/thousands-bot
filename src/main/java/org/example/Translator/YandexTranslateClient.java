@@ -1,5 +1,6 @@
 package org.example.Translator;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.*;
 import org.example.Translator.TranslationPOJOs.TranslationRequest;
@@ -18,11 +19,8 @@ public class YandexTranslateClient {
 
     public TranslationResponse getTranslate(List<String> texts) throws IOException {
         OkHttpClient client = new OkHttpClient();
-
-        String json = objectMapper.writeValueAsString(new TranslationRequest(folderId, texts, targetLanguage));
-        MediaType JSON = MediaType.get("application/json; charset=utf-8");
-
-        RequestBody body = RequestBody.create(json, JSON);
+        
+        RequestBody body = formRequestBody(texts);
 
         Request request = new Request.Builder()
                 .url(url)
@@ -43,5 +41,12 @@ public class YandexTranslateClient {
         }
 
         return null;
+    }
+
+    private RequestBody formRequestBody(List<String> texts) throws JsonProcessingException
+    {
+        String json = objectMapper.writeValueAsString(new TranslationRequest(folderId, texts, targetLanguage));
+        MediaType JSON = MediaType.get("application/json; charset=utf-8");
+        return RequestBody.create(json, JSON);
     }
 }
