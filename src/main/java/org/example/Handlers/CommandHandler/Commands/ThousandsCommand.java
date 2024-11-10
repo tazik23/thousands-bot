@@ -1,13 +1,17 @@
 package org.example.Handlers.CommandHandler.Commands;
 
 import org.example.ArticleServices.IArticleFinder;
+import org.example.Handlers.CallbackHandler.CallbackType;
 import org.example.Models.Article;
 import org.example.Models.Session;
 import org.example.Repositories.ISessionRepository;
 import org.example.Utils.Consts;
 import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ThousandsCommand implements ICommand{
@@ -34,5 +38,20 @@ public class ThousandsCommand implements ICommand{
         }
         SendMessage sendMessage = new SendMessage(String.valueOf(id), message.toString());
         return List.of();
+    }
+
+    private InlineKeyboardMarkup createKeyboard(List<Article> articles){
+        InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
+        List<List<InlineKeyboardButton>> rowList = new ArrayList<>();
+
+        for (int i = 0; i < articles.size(); i++) {
+            InlineKeyboardButton button = new InlineKeyboardButton();
+            button.setText(articles.get(i).getTitle());
+            button.setCallbackData(CallbackType.ARTICLE.getDescription() + " " + i);
+            rowList.add(List.of(button));
+        }
+
+        inlineKeyboardMarkup.setKeyboard(rowList);
+        return inlineKeyboardMarkup;
     }
 }
