@@ -15,7 +15,7 @@ public class InMemorySessionRepository implements ISessionRepository{
 
     @Override
     public void addSession(Session session) {
-
+        sessions.put(session.getId(), session);
     }
 
     @Override
