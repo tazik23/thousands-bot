@@ -1,4 +1,7 @@
 package org.example.DictionaryCompiler;
 
-public interface IDIctionaryCompiler {
+import java.io.File;
+
+public interface IDictionaryCompiler {
+    File compileDictionary(File file);
 }
