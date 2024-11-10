@@ -1,12 +1,17 @@
 package org.example.Handlers.CallbackHandler.Callbacks;
 
 import org.example.Handlers.CallbackHandler.CallbackType;
+import org.example.Models.Session;
 import org.example.Repositories.ISessionRepository;
 import org.example.Translator.ITranslator;
+import org.example.Utils.Consts;
 import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,7 +26,30 @@ public class TranslationCallback implements ICallback{
 
     @Override
     public List<PartialBotApiMethod> apply(long id, String message) {
-        return List.of();
+        if(message.equalsIgnoreCase("Да")) {
+            Session session = repository.getSessionById(id);
+            File selectedArticle = session.getSelectedArticle();
+            File translatedArticle = session.getTranslatedArticle();
+
+            if (selectedArticle == null) {
+                return List.of(new SendMessage(String.valueOf(id), Consts.ERROR));
+            }
+            if (translatedArticle != null) {
+                return List.of(new SendMessage(String.valueOf(id), Consts.TRANSLATION_EXISTS));
+            }
+            try {
+                translatedArticle = translator.translateFile(selectedArticle);
+                session.setTranslatedArticle(translatedArticle);
+            }
+            catch (IOException e){
+                return List.of(new SendMessage(String.valueOf(id), Consts.ERROR));
+            }
+        }
+
+        SendMessage sendMessage =  new SendMessage(String.valueOf(id), Consts.CHOOSE_DICTIONARY);
+        sendMessage.setReplyMarkup(createKeyboard());
+
+        return List.of(sendMessage);
     }
 
     private InlineKeyboardMarkup createKeyboard() {
