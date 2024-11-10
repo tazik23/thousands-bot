@@ -2,11 +2,17 @@ package org.example.Handlers.CallbackHandler.Callbacks;
 
 import org.example.ArticleServices.IArticleParser;
 import org.example.Handlers.CallbackHandler.CallbackType;
+import org.example.Models.Article;
+import org.example.Models.Session;
 import org.example.Repositories.ISessionRepository;
+import org.example.Utils.Consts;
 import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,7 +27,31 @@ public class ArticleCallback implements ICallback{
 
     @Override
     public List<PartialBotApiMethod> apply(long id, String message) {
-        return List.of();
+        Session session = sessionRepository.getSessionById(id);
+
+        File selectedArticle = session.getSelectedArticle();
+
+        if(selectedArticle != null){
+            return List.of(new SendMessage(String.valueOf(id), Consts.ARTICLE_CHOSEN));
+        }
+
+        List<Article> articles = session.getSuggestedArticles();
+        int num = Integer.parseInt(message);
+
+        if(articles.isEmpty() || articles.size() < num){
+            return List.of(new SendMessage(String.valueOf(id), Consts.ERROR));
+        }
+        try {
+            selectedArticle = articleParser.parse(articles.get(num));
+            session.setSelectedArticle(selectedArticle);
+
+            SendMessage sendMessage = new SendMessage(String.valueOf(id), Consts.CHOOSE_TRANSLATION);
+            sendMessage.setReplyMarkup(createKeyboard());
+            return List.of(new SendMessage(String.valueOf(id), "выбрана статья "  + selectedArticle.getName()),sendMessage);
+        }
+        catch (IOException e) {
+            return List.of(new SendMessage(String.valueOf(id), Consts.ERROR));
+        }
     }
 
     private InlineKeyboardMarkup createKeyboard() {
