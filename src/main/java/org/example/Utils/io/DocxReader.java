@@ -17,4 +17,14 @@ public class DocxReader {
         paragraphIterator = document.getParagraphs().iterator();
     }
 
+    public String readParagraph() throws IOException {
+        if (paragraphIterator.hasNext()) {
+            XWPFParagraph paragraph = paragraphIterator.next();
+            return paragraph.getText();
+        }
+        else {
+            document.close();
+            return null;
+        }
+    }
 }
