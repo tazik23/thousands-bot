@@ -37,7 +37,8 @@ public class ThousandsCommand implements ICommand{
             message.append(i + ".) " + articles.get(i - 1).getTitle() + "\n");
         }
         SendMessage sendMessage = new SendMessage(String.valueOf(id), message.toString());
-        return List.of();
+        sendMessage.setReplyMarkup(createKeyboard(articles));
+        return List.of(sendMessage);
     }
 
     private InlineKeyboardMarkup createKeyboard(List<Article> articles){
