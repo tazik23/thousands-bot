@@ -5,7 +5,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.util.List;
 
-public interface IHandler {
+public interface    IHandler {
     List<PartialBotApiMethod> handle(Update update);
 }
 
