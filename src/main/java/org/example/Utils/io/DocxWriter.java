@@ -16,7 +16,7 @@ public class DocxWriter implements AutoCloseable{
         this.document = new XWPFDocument();
     }
 
-    public void writeParagraph(String text) throws IOException {
+    public void writeParagraph(String text) {
         XWPFParagraph paragraph = document.createParagraph();
         paragraph.createRun().setText(text);
     }

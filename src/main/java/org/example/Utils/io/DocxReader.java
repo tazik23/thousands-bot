@@ -19,7 +19,7 @@ public class DocxReader implements AutoCloseable {
         this.paragraphIterator = document.getParagraphs().iterator();
     }
 
-    public String readParagraph() throws IOException {
+    public String readParagraph() {
         if (paragraphIterator.hasNext()) {
             return paragraphIterator.next().getText();
         }
