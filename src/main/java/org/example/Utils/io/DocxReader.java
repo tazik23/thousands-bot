@@ -8,23 +8,31 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Iterator;
 
-public class DocxReader {
-    private XWPFDocument document;
-    private Iterator<XWPFParagraph> paragraphIterator;
+public class DocxReader implements AutoCloseable {
+    private final FileInputStream fis;
+    private final XWPFDocument document;
+    private final Iterator<XWPFParagraph> paragraphIterator;
 
-    public DocxReader(FileInputStream fis) throws IOException {
-        document = new XWPFDocument(fis);
-        paragraphIterator = document.getParagraphs().iterator();
+    public DocxReader(File file) throws IOException {
+        this.fis = new FileInputStream(file);
+        this.document = new XWPFDocument(fis);
+        this.paragraphIterator = document.getParagraphs().iterator();
     }
 
     public String readParagraph() throws IOException {
         if (paragraphIterator.hasNext()) {
-            XWPFParagraph paragraph = paragraphIterator.next();
-            return paragraph.getText();
+            return paragraphIterator.next().getText();
         }
-        else {
+        return null;
+    }
+
+    @Override
+    public void close() throws Exception {
+        if(document != null) {
             document.close();
-            return null;
+        }
+        if(fis != null){
+            fis.close();
         }
     }
 }
