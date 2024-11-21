@@ -6,7 +6,7 @@ import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-public class DocxWriter {
+public class DocxWriter implements AutoCloseable{
     private XWPFDocument document;
     private FileOutputStream fos;
 
@@ -22,6 +22,13 @@ public class DocxWriter {
 
     public void save() throws IOException {
         document.write(fos);
-        document.close();
+    }
+
+    @Override
+    public void close() throws Exception {
+        if(document != null)
+            document.close();
+        if(fos != null)
+            fos.close();
     }
 }
