@@ -3,16 +3,17 @@ package org.example.Utils.io;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
 public class DocxWriter implements AutoCloseable{
-    private XWPFDocument document;
-    private FileOutputStream fos;
+    private final XWPFDocument document;
+    private final FileOutputStream fos;
 
-    public DocxWriter(FileOutputStream fileOutputStream) throws IOException {
-        fos = fileOutputStream;
-        document = new XWPFDocument();
+    public DocxWriter(File file) throws IOException {
+        this.fos = new FileOutputStream(file);
+        this.document = new XWPFDocument();
     }
 
     public void writeParagraph(String text) throws IOException {
