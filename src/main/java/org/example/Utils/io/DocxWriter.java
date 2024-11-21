@@ -26,9 +26,11 @@ public class DocxWriter implements AutoCloseable{
 
     @Override
     public void close() throws Exception {
-        if(document != null)
+        if(document != null) {
             document.close();
-        if(fos != null)
+        }
+        if(fos != null) {
             fos.close();
+        }
     }
 }
