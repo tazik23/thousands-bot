@@ -37,17 +37,15 @@ public class Translator implements ITranslator {
     @Override
     public File translateFile(File file) throws IOException {
         File translatedFile = new File("Translated" + file.getName());
-        DocxReader reader = new DocxReader(new FileInputStream(file));
-        DocxWriter writer = new DocxWriter(new FileOutputStream(translatedFile));
 
-        try {
+        try (DocxReader reader = new DocxReader(file);
+             DocxWriter writer = new DocxWriter(translatedFile)) {
             String paragraph;
             List<String> paragraphs = new ArrayList<>();
             List<String> translatedParagraphs;
             while((paragraph = reader.readParagraph()) != null) {
-                if(paragraph.isEmpty())
-                    continue;
-                paragraphs.add(paragraph);
+                if(!paragraph.isEmpty())
+                    paragraphs.add(paragraph);
             }
 
             translatedParagraphs = translate(paragraphs);
@@ -56,7 +54,7 @@ public class Translator implements ITranslator {
             writer.save();
             return translatedFile;
         }
-        catch (IOException e) {
+        catch (Exception e) {
             return null;
         }
     }
