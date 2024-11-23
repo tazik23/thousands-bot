@@ -1,12 +1,14 @@
 package org.example.ArticleServices;
 
 import org.example.Models.Article;
+import org.example.Utils.io.DocxWriter;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -17,19 +19,24 @@ public class ArticleParser implements IArticleParser {
     @Override
     public File parse(Article article) throws IOException {
 
-        File file = new File(article.getTitle() + ".txt");
+        File file = new File(article.getTitle() + ".docx");
+        DocxWriter writer = new DocxWriter(new FileOutputStream(file));
 
-        // получаем текст статьи
+
         List<String> articleTexts = getText(article);
 
 
-        try (FileWriter writer = new FileWriter(file)) {
-            writer.write("Title: " + article.getTitle() + "\n");
-            writer.write("Link: " + article.getLink() + "\n");
-            writer.write("Content:\n");
+        try {
+            writer.writeParagraph("Title: " + article.getTitle() + "\n");
+            writer.writeParagraph("Link: " + article.getLink() + "\n");
+            writer.writeParagraph("Content:\n");
             for (String paragraph : articleTexts) {
-                writer.write(paragraph + "\n");
+                writer.writeParagraph(paragraph + "\n");
             }
+            writer.save();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
         }
         return file;
     }
