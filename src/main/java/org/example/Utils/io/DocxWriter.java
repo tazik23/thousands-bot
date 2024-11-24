@@ -6,6 +6,7 @@ import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.List;
 
 public class DocxWriter implements AutoCloseable{
     private final XWPFDocument document;
@@ -20,6 +21,13 @@ public class DocxWriter implements AutoCloseable{
         XWPFParagraph paragraph = document.createParagraph();
         paragraph.createRun().setText(text);
     }
+
+    public void write(List<String> text) {
+        for (var paragraph : text){
+            writeParagraph(paragraph);
+        }
+    }
+
 
     public void save() throws IOException {
         document.write(fos);
