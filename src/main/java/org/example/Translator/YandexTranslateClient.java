@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.util.List;
 
 public class YandexTranslateClient {
-    private final String url = "https://translate.api.cloud.yandex.net/translate/v2/translate";
     private final String ApiKey = System.getenv("API_KEY");
     private final String folderId = System.getenv("FOLDER_ID");
 
@@ -20,7 +19,7 @@ public class YandexTranslateClient {
     public TranslationResponse getTranslate(List<String> texts, String targetLanguage) throws IOException {
         RequestBody body = formRequestBody(texts, targetLanguage);
         Request request = new Request.Builder()
-                .url(url)
+                .url("https://translate.api.cloud.yandex.net/translate/v2/translate")
                 .header("Content-Type", "application/json")
                 .header("Authorization", ("Api-Key " + ApiKey))
                 .post(body)
