@@ -36,23 +36,16 @@ public class Translator implements ITranslator {
     }
 
     @Override
-    public File translateFile(File file) throws IOException {
+    public File translateFile(File file) {
         File translatedFile = new File("Translated" + file.getName());
 
         try (DocxReader reader = new DocxReader(file);
              DocxWriter writer = new DocxWriter(translatedFile)) {
-            String paragraph;
-            List<String> paragraphs = new ArrayList<>();
-            List<String> translatedParagraphs;
-            while((paragraph = reader.readParagraph()) != null) {
-                if(!paragraph.isEmpty())
-                    paragraphs.add(paragraph);
-            }
-
-            translatedParagraphs = translate(paragraphs);
-            for(var translatedParagraph : translatedParagraphs)
-                writer.writeParagraph(translatedParagraph);
+            List<String> paragraphs = reader.read();
+            List<String> translatedParagraphs = translate(paragraphs);
+            writer.write(translatedParagraphs);
             writer.save();
+
             return translatedFile;
         }
         catch (Exception e) {
