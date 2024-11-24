@@ -14,7 +14,7 @@ import java.util.List;
 public class Translator implements ITranslator {
     private final YandexTranslateClient client = new YandexTranslateClient();
 
-    @Override
+
     public String translate(String text) throws IOException {
         TranslationResponse response = client.getTranslate(List.of(text));
         if (response.getTranslations() != null && !response.getTranslations().isEmpty()) {
@@ -22,7 +22,7 @@ public class Translator implements ITranslator {
         }
         else throw new IOException();
     }
-
+    @Override
     public List<String> translate(List<String> text) throws IOException {
         TranslationResponse response = client.getTranslate(text);
         if (response.getTranslations() != null && !response.getTranslations().isEmpty()) {
