@@ -1,8 +1,11 @@
 package org.example.DictionaryCompiler.Queue;
 
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Iterator;
 import java.util.concurrent.PriorityBlockingQueue;
 
-public class BoundedPriorityBlockingQueue {
+public class BoundedPriorityBlockingQueue implements Iterable<PrioritizedWord> {
     private final int capacity;
     private final PriorityBlockingQueue<PrioritizedWord> queue;
 
@@ -28,5 +31,11 @@ public class BoundedPriorityBlockingQueue {
 
     public boolean isEmpty() {
         return queue.isEmpty();
+    }
+
+    @NotNull
+    @Override
+    public Iterator iterator() {
+        return queue.iterator();
     }
 }
