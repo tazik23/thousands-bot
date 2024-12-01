@@ -4,10 +4,11 @@ import org.example.DictionaryCompiler.Queue.BoundedPriorityBlockingQueue;
 import org.example.DictionaryCompiler.Queue.PrioritizedWord;
 import org.example.DictionaryCompiler.WordComplexityAnalyzers.WordFrequencyAnalyzer;
 import org.example.DictionaryCompiler.WordComplexityAnalyzers.WordLengthAnalyzer;
+import org.example.Translator.ITranslator;
 import org.example.Utils.io.DocxReader;
+import org.example.Utils.io.DocxWriter;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -17,16 +18,31 @@ public class DictionaryCompiler implements IDictionaryCompiler{
     private final TextTokenizer tokenizer;
     private final WordLengthAnalyzer lengthAnalyzer;
     private final WordFrequencyAnalyzer frequencyAnalyzer;
+    private final ITranslator translator;
 
-    public DictionaryCompiler(TextTokenizer tokenizer, WordLengthAnalyzer lengthAnalyzer, WordFrequencyAnalyzer frequencyAnalyzer) {
+    public DictionaryCompiler(TextTokenizer tokenizer, WordLengthAnalyzer lengthAnalyzer, WordFrequencyAnalyzer frequencyAnalyzer, ITranslator translator) {
         this.tokenizer = tokenizer;
         this.lengthAnalyzer = lengthAnalyzer;
         this.frequencyAnalyzer = frequencyAnalyzer;
+        this.translator = translator;
     }
 
     @Override
     public File compileDictionary(File file) {
-        return null;
+        File dictionary = new File("Dictionary" + file.getName());
+        BoundedPriorityBlockingQueue queue = getComplexWords(file);
+
+        try(DocxWriter writer = new DocxWriter(dictionary)) {
+            for(var prioritizedWord : queue) {
+                String word = prioritizedWord.getWord();
+                writer.writeParagraph(word + " - " + translator.translate(word));
+            }
+            writer.save();
+            return dictionary;
+        }
+        catch (Exception e) {
+            return null;
+        }
     }
 
     private BoundedPriorityBlockingQueue getComplexWords(File file) {
