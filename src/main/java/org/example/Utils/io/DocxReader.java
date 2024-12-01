@@ -6,7 +6,9 @@ import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 public class DocxReader implements AutoCloseable {
     private final FileInputStream fis;
@@ -24,6 +26,16 @@ public class DocxReader implements AutoCloseable {
             return paragraphIterator.next().getText();
         }
         return null;
+    }
+
+    public List<String> read() {
+        List<String> paragraphs = new ArrayList<>();
+        String paragraph;
+        while((paragraph = readParagraph()) != null) {
+            if (!paragraph.isEmpty())
+                paragraphs.add(paragraph);
+        }
+        return paragraphs;
     }
 
     @Override
