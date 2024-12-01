@@ -12,5 +12,5 @@ public class Consts {
     public static final String ARTICLE_CHOSEN = "чего тыкаешь? уже выбрал, хочешь отменить - /cancel введи";
     public static final String TRANSLATION_EXISTS = "ну что ты тыкаешь? перевод уже есть";
     public static final String DICTIONARY_EXISTS = ".... уже есть";
-
+    public static final String CHOOSE_THEME = "выберите тему: ";
 }
