@@ -38,6 +38,8 @@ public class Session {
         return dictionary;
     }
 
+    public String getSelectedTheme() {return selectedTheme;}
+
     public void setSelectedArticle(File file){
         selectedArticle = file;
     }
