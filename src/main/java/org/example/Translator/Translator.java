@@ -19,6 +19,11 @@ public class Translator implements ITranslator {
     }
 
     @Override
+    public String translate(String text) throws IOException {
+        return translate(List.of(text)).get(0);
+    }
+
+    @Override
     public List<String> translate(List<String> text) throws IOException {
         List<List<String>> splitText = splitByMaxLength(text);
         List<String> translations = new ArrayList<>();
