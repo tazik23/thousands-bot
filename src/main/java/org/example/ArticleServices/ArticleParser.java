@@ -18,8 +18,10 @@ public class ArticleParser implements IArticleParser {
 
     @Override
     public File parse(Article article) throws IOException {
-
-        File file = new File(article.getTitle() + ".docx");
+        String sanitizedTitle = article.getTitle()
+                .replaceAll(" ", "_")
+                .replaceAll("[\\\\/:*?\"<>|]", "");
+        File file = new File(sanitizedTitle + ".docx");
         DocxWriter writer = new DocxWriter(new FileOutputStream(file));
 
 
