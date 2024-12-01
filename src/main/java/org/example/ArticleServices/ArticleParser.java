@@ -22,7 +22,7 @@ public class ArticleParser implements IArticleParser {
                 .replaceAll(" ", "_")
                 .replaceAll("[\\\\/:*?\"<>|]", "");
         File file = new File(sanitizedTitle + ".docx");
-        DocxWriter writer = new DocxWriter(new FileOutputStream(file));
+        DocxWriter writer = new DocxWriter(file);
 
 
         List<String> articleTexts = getText(article);

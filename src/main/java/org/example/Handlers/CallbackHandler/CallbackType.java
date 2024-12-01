@@ -1,6 +1,7 @@
 package org.example.Handlers.CallbackHandler;
 
 public enum CallbackType {
+    THEME("themes"),
     ARTICLE("article"),
     TRANSLATION ("translation"),
     DICTIONARY("dictionary");
