@@ -9,6 +9,7 @@ import org.jsoup.select.Elements;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,8 +22,11 @@ public class ArticleParser implements IArticleParser {
                 .replaceAll(" ", "_")
                 .replaceAll("[\\\\/:*?\"<>|]", "");
         File file = new File(sanitizedTitle + ".docx");
-        DocxWriter writer = new DocxWriter(new FileOutputStream(file));
+        DocxWriter writer = new DocxWriter(file);
+
+
         List<String> articleTexts = getText(article);
+
 
         try {
             writer.writeParagraph("Title: " + article.getTitle() + "\n");

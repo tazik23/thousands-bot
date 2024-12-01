@@ -15,7 +15,7 @@ import java.util.List;
 
 public class ArticleFinder implements IArticleFinder {
     private final ThemesFinder themesFinder;
-
+    private static final String url = "https://www.joelonsoftware.com/";
     public ArticleFinder(ThemesFinder themesFinder) {
         this.themesFinder = themesFinder;
     }
@@ -36,6 +36,5 @@ public class ArticleFinder implements IArticleFinder {
         }
         return articles;
     }
-
 }
 
