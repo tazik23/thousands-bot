@@ -17,12 +17,10 @@ import java.util.List;
 
 public class ThemesCallback implements ICallback{
     private final ISessionRepository sessionRepository;
-    private final IThemesFinder themesFinder;
     private  final IArticleFinder articleFinder;
 
-    public ThemesCallback(ISessionRepository sessionRepository, IThemesFinder themesFinder, IArticleFinder articleFinder ){
+    public ThemesCallback(ISessionRepository sessionRepository, IArticleFinder articleFinder ){
         this.sessionRepository = sessionRepository;
-        this.themesFinder = themesFinder;
         this.articleFinder = articleFinder;
     }
 
@@ -34,15 +32,7 @@ public class ThemesCallback implements ICallback{
             return List.of(new SendMessage(String.valueOf(id), Consts.ARTICLE_CHOSEN));
         }
 
-        if (session.getSelectedTheme() != null)
-            return List.of(new SendMessage(String.valueOf(id), "Тема уже выбрана: " + session.getSelectedTheme()));
-
-
         List<String> themes = session.getSuggestedThemes();
-        if (themes == null || themes.isEmpty()) {
-            themes = themesFinder.getThemeNames();
-            session.setSuggestedThemes(themes);
-        }
 
         int themeIndex;
         try {
@@ -58,8 +48,6 @@ public class ThemesCallback implements ICallback{
         String selectedTheme = themes.get(themeIndex);
         session.setSelectedTheme(selectedTheme);
 
-
-        // Формируем кнопки для статей из выбранной темы
         List<Article> articles = articleFinder.findArticlesByTheme(selectedTheme);
         if (articles.isEmpty()) {
             return List.of(new SendMessage(String.valueOf(id), Consts.ERROR));

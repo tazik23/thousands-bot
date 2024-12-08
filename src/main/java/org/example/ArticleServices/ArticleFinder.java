@@ -14,17 +14,13 @@ import java.util.List;
 
 
 public class ArticleFinder implements IArticleFinder {
-    private final ThemesFinder themesFinder;
     private static final String url = "https://www.joelonsoftware.com/";
-    public ArticleFinder(ThemesFinder themesFinder) {
-        this.themesFinder = themesFinder;
-    }
 
     @Override
     public List<Article> findArticlesByTheme(String selectedTheme) {
         List<Article> articles = new ArrayList<>();
         try {
-            Document doc = Jsoup.connect(Consts.BASE_URL).get();
+            Document doc = Jsoup.connect(url).get();
             Elements titles = doc.select("div.editor-category-posts."+ selectedTheme.toLowerCase().replace(" ", "-")+ " ul li a");
             for (Element title : titles) {
                 String articleTitle = title.text();

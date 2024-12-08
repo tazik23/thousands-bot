@@ -29,9 +29,6 @@ public class ArticleParser implements IArticleParser {
 
 
         try {
-            writer.writeParagraph("Title: " + article.getTitle() + "\n");
-            writer.writeParagraph("Link: " + article.getLink() + "\n");
-            writer.writeParagraph("Content:\n");
             for (String paragraph : articleTexts) {
                 writer.writeParagraph(paragraph + "\n");
             }
