@@ -1,7 +1,7 @@
 package org.example.Models;
 
 import java.io.File;
-import java.util.List;
+import java.util.Iterator;
 
 
 public class Session {
@@ -10,21 +10,16 @@ public class Session {
     private File selectedArticle;
     private File translatedArticle;
     private File dictionary;
-    private List<Article> suggestedArticles;
-    private String  selectedTheme;
-    private List<String> suggestedThemes;
+    private Iterator<Article> suggestedArticles;
 
     public Session(long id) { this.id = id; }
 
     public long getId() { return id; }
 
-    public List<Article> getSuggestedArticles(){
+    public Iterator<Article> getSuggestedArticles(){
         return suggestedArticles;
     }
 
-    public List<String> getSuggestedThemes(){
-        return suggestedThemes;
-    }
 
     public File getSelectedArticle() {
         return selectedArticle;
@@ -38,13 +33,9 @@ public class Session {
         return dictionary;
     }
 
-    public String getSelectedTheme() {return selectedTheme;}
-
     public void setSelectedArticle(File file){
         selectedArticle = file;
     }
-
-    public void setSelectedTheme(String theme){ selectedTheme = theme;}
 
     public void setTranslatedArticle(File translatedArticle) {
         this.translatedArticle = translatedArticle;
@@ -54,12 +45,9 @@ public class Session {
         this.dictionary = dictionary;
     }
 
-    public void setSuggestedArticles(List<Article> suggestedArticles) {
+    public void setSuggestedArticles(Iterator<Article> suggestedArticles) {
         this.suggestedArticles = suggestedArticles;
     }
 
-    public void setSuggestedThemes(List<String> suggestedThemes){
-        this.suggestedThemes = suggestedThemes;
-    }
 }
 
