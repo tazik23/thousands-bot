@@ -21,8 +21,11 @@ public class CallbackHandler implements IHandler {
     public List<PartialBotApiMethod> handle(Update update) {
         long chatId = update.getCallbackQuery().getMessage().getChatId();
         String callbackData = update.getCallbackQuery().getData();
-        String type = callbackData.split(" ")[0];
-        String message = callbackData.split(" ")[1];
+
+        String[] parts = callbackData.split(" ", 2);
+
+        String type = parts[0];
+        String message = parts[1];
 
         try {
             CallbackType callbackType = CallbackType.fromDescription(type);

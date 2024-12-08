@@ -35,15 +35,15 @@ public class Main {
         ITranslator translator = new Translator("ru");
         IArticleParser articleParser = new ArticleParser();
         ThemesFinder themesFinder = new ThemesFinder();
-        IArticleFinder articleFinder = new ArticleFinder(themesFinder);
+        IArticleFinder articleFinder = new ArticleFinder();
         IDictionaryCompiler dictionaryCompiler = new DictionaryCompiler
                 (tokenizer, lengthAnalyzer, frequencyAnalyzer, new Translator("ru"));
 
         Map<CallbackType, ICallback> callbacks = Map.of(
-                CallbackType.ARTICLE, new ArticleCallback(sessionRepository, articleParser),
+                CallbackType.ARTICLE, new ArticleCallback(sessionRepository, articleParser,articleFinder),
                 CallbackType.TRANSLATION, new TranslationCallback(sessionRepository, translator),
                 CallbackType.DICTIONARY, new DictionaryCallback(sessionRepository, dictionaryCompiler),
-                CallbackType.THEME, new ThemesCallback(sessionRepository, themesFinder, articleFinder)
+                CallbackType.THEME, new ThemesCallback(sessionRepository,  articleFinder)
         );
 
         Map<CommandType, ICommand> commands = Map.of(

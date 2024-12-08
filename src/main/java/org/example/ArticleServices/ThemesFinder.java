@@ -11,12 +11,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ThemesFinder implements IThemesFinder {
-
+    private static final String url = "https://www.joelonsoftware.com/";
     @Override
     public List<String> getThemeNames() {
         List<String> themeNames = new ArrayList<>();
         try {
-            Document doc = Jsoup.connect(Consts.BASE_URL).get();
+            Document doc = Jsoup.connect(url).get();
             Elements themeElements = doc.select("div.editor-reading-lists > h3.editor-reading-list-title > a");
 
             for (Element themeElement : themeElements) {
