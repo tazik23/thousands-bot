@@ -25,11 +25,9 @@ public class ThousandsCommand implements ICommand{
 
     @Override
     public List<PartialBotApiMethod> apply(long id) {
+
         Session session = new Session(id);
         List<String> themes = themesFinder.getThemeNames();
-        session.setSuggestedThemes(themes);
-        sessionRepository.addSession(session);
-
         StringBuilder message = new StringBuilder(Consts.CHOOSE_THEME + "\n");
 
         for (int i = 1; i <= themes.size(); i++) {
@@ -38,6 +36,7 @@ public class ThousandsCommand implements ICommand{
 
         SendMessage sendMessage = new SendMessage(String.valueOf(id), message.toString());
         sendMessage.setReplyMarkup(createKeyboard(themes));
+        sessionRepository.addSession(session);
         return List.of(sendMessage);
     }
 
@@ -48,7 +47,7 @@ public class ThousandsCommand implements ICommand{
         for (int i = 0; i < themes.size(); i++) {
             InlineKeyboardButton button = new InlineKeyboardButton();
             button.setText(themes.get(i));
-            button.setCallbackData(CallbackType.THEME.getDescription() + " " + i);
+            button.setCallbackData(CallbackType.THEME.getDescription() + " " + themes.get(i));
             rowList.add(List.of(button));
         }
 
