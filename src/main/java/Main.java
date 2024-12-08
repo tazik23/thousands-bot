@@ -40,7 +40,7 @@ public class Main {
                 (tokenizer, lengthAnalyzer, frequencyAnalyzer, new Translator("ru"));
 
         Map<CallbackType, ICallback> callbacks = Map.of(
-                CallbackType.ARTICLE, new ArticleCallback(sessionRepository, articleParser),
+                CallbackType.ARTICLE, new ArticleCallback(sessionRepository, articleParser,articleFinder),
                 CallbackType.TRANSLATION, new TranslationCallback(sessionRepository, translator),
                 CallbackType.DICTIONARY, new DictionaryCallback(sessionRepository, dictionaryCompiler),
                 CallbackType.THEME, new ThemesCallback(sessionRepository,  articleFinder)
