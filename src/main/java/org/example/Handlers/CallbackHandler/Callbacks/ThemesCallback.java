@@ -1,7 +1,6 @@
 package org.example.Handlers.CallbackHandler.Callbacks;
 
 import org.example.ArticleServices.IArticleFinder;
-import org.example.ArticleServices.IThemesFinder;
 import org.example.Handlers.CallbackHandler.CallbackType;
 import org.example.Models.Article;
 import org.example.Models.Session;
@@ -13,13 +12,14 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMa
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
-public class ThemesCallback implements ICallback{
+public class ThemesCallback implements ICallback {
     private final ISessionRepository sessionRepository;
-    private  final IArticleFinder articleFinder;
+    private final IArticleFinder articleFinder;
 
-    public ThemesCallback(ISessionRepository sessionRepository, IArticleFinder articleFinder ){
+    public ThemesCallback(ISessionRepository sessionRepository, IArticleFinder articleFinder) {
         this.sessionRepository = sessionRepository;
         this.articleFinder = articleFinder;
     }
@@ -32,48 +32,87 @@ public class ThemesCallback implements ICallback{
             return List.of(new SendMessage(String.valueOf(id), Consts.ARTICLE_CHOSEN));
         }
 
-        List<String> themes = session.getSuggestedThemes();
 
-        int themeIndex;
-        try {
-            themeIndex = Integer.parseInt(message);
-        } catch (NumberFormatException e) {
+        if (message.equalsIgnoreCase("next")) {
+            Iterator<Article> articleIterator = session.getSuggestedArticles();
+            if (articleIterator == null || !articleIterator.hasNext()) {
+                return List.of(new SendMessage(String.valueOf(id), "Нет больше статей"));
+            }
+            return createArticlesMessageWithButtons(id, "Вот следующие статьи:", articleIterator);
+        }
+        if (message.isEmpty()) {
             return List.of(new SendMessage(String.valueOf(id), Consts.ERROR));
         }
 
-        if (themeIndex < 0 || themeIndex >= themes.size()) {
-            return List.of(new SendMessage(String.valueOf(id), Consts.ERROR));
-        }
 
-        String selectedTheme = themes.get(themeIndex);
-        session.setSelectedTheme(selectedTheme);
+        Iterator<Article> articleIterator = articleFinder.findArticlesByTheme(message).iterator();
+        session.setSuggestedArticles(articleIterator);
 
-        List<Article> articles = articleFinder.findArticlesByTheme(selectedTheme);
-        if (articles.isEmpty()) {
-            return List.of(new SendMessage(String.valueOf(id), Consts.ERROR));
-        }
-        session.setSuggestedArticles(articles);
+        String text = "Вы выбрали тему: " + message + "\n" + Consts.CHOOSE_ARTICLE;
 
-        SendMessage sendMessage = new SendMessage(String.valueOf(id), Consts.CHOOSE_ARTICLE);
-        sendMessage.setReplyMarkup(createKeyboard(articles));
-
-        String text = "Вы выбрали тему: " + selectedTheme + "\n";
-        return List.of(new SendMessage(String.valueOf(id), text), sendMessage);
+        return createArticlesMessageWithButtons(id, text, articleIterator);
     }
 
-
-    private InlineKeyboardMarkup createKeyboard(List<Article> articles) {
-        InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
+    private List<PartialBotApiMethod> createArticlesMessageWithButtons(long id, String text, Iterator<Article> articleIterator) {
+        StringBuilder textBuilder = new StringBuilder(text + "\n");
         List<List<InlineKeyboardButton>> rowList = new ArrayList<>();
 
-        for (int i = 0; i < articles.size(); i++) {
+        int counter = 0;
+        while (articleIterator.hasNext() && counter < 5) {
+            Article article = articleIterator.next();
+
+            String Link = '(' + escapeMarkdown(article.getLink()) + ") ";
+            String Title = '[' + escapeMarkdown(article.getTitle()) + ']';
+            textBuilder.append(counter + 1).append("\\) ").append(Title).append(Link).append("\n");
+
+
             InlineKeyboardButton button = new InlineKeyboardButton();
-            button.setText(articles.get(i).getTitle());
-            button.setCallbackData(CallbackType.ARTICLE.getDescription() + " " + i);
+            button.setText(article.getTitle());
+
+
+            int length = article.getTitle().codePointCount(0, article.getTitle().length());
+            String safeTitle = length > 56
+                    ? article.getTitle().substring(0, 56)
+                    : article.getTitle();
+
+            button.setCallbackData(CallbackType.ARTICLE.getDescription() + " " + safeTitle);
             rowList.add(List.of(button));
+            counter++;
         }
 
+
+        if (articleIterator.hasNext()) {
+            InlineKeyboardButton nextButton = new InlineKeyboardButton();
+            nextButton.setText("Еще");
+            nextButton.setCallbackData(CallbackType.THEME.getDescription() + ' ' + "next");
+            rowList.add(List.of(nextButton));
+        }
+
+        SendMessage sendMessage = new SendMessage();
+        sendMessage.setChatId(id);
+        sendMessage.setParseMode("MarkdownV2");
+        sendMessage.setText(textBuilder.toString());
+        InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
         inlineKeyboardMarkup.setKeyboard(rowList);
-        return inlineKeyboardMarkup;
+        sendMessage.setReplyMarkup(inlineKeyboardMarkup);
+
+        return List.of(sendMessage);
+    }
+
+    private String escapeMarkdown(String text) {
+        return text.replace("(", "\\(")
+                .replace(")", "\\)")
+                .replace("[", "\\[")
+                .replace("]", "\\]")
+                .replace("~", "\\~")
+                .replace("`", "\\`")
+                .replace(">", "\\>")
+                .replace("#", "\\#")
+                .replace("+", "\\+")
+                .replace("-", "\\-")
+                .replace("=", "\\=")
+                .replace("!", "\\!")
+                .replace("_", "\\_")
+                .replace("*", "\\*");
     }
 }
