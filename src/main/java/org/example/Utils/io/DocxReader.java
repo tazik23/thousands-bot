@@ -30,9 +30,8 @@ public class DocxReader implements AutoCloseable {
 
     public List<String> read() {
         List<String> paragraphs = new ArrayList<>();
-        String paragraph;
-        while((paragraph = readParagraph()) != null) {
-            if (!paragraph.isEmpty())
+        while((paragraphIterator.hasNext())) {
+            String paragraph = paragraphIterator.next().getText();
                 paragraphs.add(paragraph);
         }
         return paragraphs;

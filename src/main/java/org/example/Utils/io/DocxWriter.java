@@ -28,7 +28,6 @@ public class DocxWriter implements AutoCloseable{
         }
     }
 
-
     public void save() throws IOException {
         document.write(fos);
     }
