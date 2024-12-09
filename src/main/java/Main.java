@@ -18,6 +18,7 @@ import org.example.Repositories.ISessionRepository;
 import org.example.Repositories.InMemorySessionRepository;
 import org.example.Translator.ITranslator;
 import org.example.Translator.Translator;
+import org.example.Translator.YandexTranslateClient;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
@@ -26,18 +27,20 @@ import java.util.Map;
 
 public class Main {
     public static void main(String[] args) {
+        YandexTranslateClient yandexTranslateClient = new YandexTranslateClient();
+
         ISessionRepository sessionRepository = new InMemorySessionRepository();
 
         TextTokenizer tokenizer = new TextTokenizer();
         WordFrequencyAnalyzer frequencyAnalyzer = new WordFrequencyAnalyzer();
         WordLengthAnalyzer lengthAnalyzer = new WordLengthAnalyzer();
 
-        ITranslator translator = new Translator("ru");
+        ITranslator translator = new Translator(yandexTranslateClient);
         IArticleParser articleParser = new ArticleParser();
         ThemesFinder themesFinder = new ThemesFinder();
         IArticleFinder articleFinder = new ArticleFinder();
         IDictionaryCompiler dictionaryCompiler = new DictionaryCompiler
-                (tokenizer, lengthAnalyzer, frequencyAnalyzer, new Translator("ru"));
+                (tokenizer, lengthAnalyzer, frequencyAnalyzer, new Translator(yandexTranslateClient));
 
         Map<CallbackType, ICallback> callbacks = Map.of(
                 CallbackType.ARTICLE, new ArticleCallback(sessionRepository, articleParser,articleFinder),
@@ -59,7 +62,7 @@ public class Main {
             telegramBotsApi.registerBot(new ThousandsBot(commandHandler, callbackHandler));
         }
         catch (TelegramApiException e) {
-            e.printStackTrace();
+            //todo: add logging
         }
     }
 }
