@@ -1,42 +1,26 @@
 package org.example.DictionaryCompiler.WordComplexityAnalyzers.Ngram.NgramPOJOs;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.List;
 
+@Setter
+@Getter
+
 public class Ngram {
+    @SerializedName("id")
     private String id;
+
+    @SerializedName("absTotalMatchCount")
     private long absTotalMatchCount;
+
+    @SerializedName("relTotalMatchCount")
     private double relTotalMatchCount;
+
+    @SerializedName("tokens")
     private List<Token> tokens;
 
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public long getAbsTotalMatchCount() {
-        return absTotalMatchCount;
-    }
-
-    public void setAbsTotalMatchCount(long absTotalMatchCount) {
-        this.absTotalMatchCount = absTotalMatchCount;
-    }
-
-    public double getRelTotalMatchCount() {
-        return relTotalMatchCount;
-    }
-
-    public void setRelTotalMatchCount(double relTotalMatchCount) {
-        this.relTotalMatchCount = relTotalMatchCount;
-    }
-
-    public List<Token> getTokens() {
-        return tokens;
-    }
-
-    public void setTokens(List<Token> tokens) {
-        this.tokens = tokens;
-    }
 }

@@ -1,23 +1,16 @@
 package org.example.DictionaryCompiler.WordComplexityAnalyzers.Ngram.NgramPOJOs;
 
+import com.google.gson.annotations.SerializedName;
+import lombok.Getter;
+import lombok.Setter;
+
+@Setter
+@Getter
 public class QueryToken {
+    @SerializedName("text")
     private String text;
+
+    @SerializedName("type")
     private String type;
-
-    public String getText() {
-        return text;
-    }
-
-    public void setText(String text) {
-        this.text = text;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
 
 }

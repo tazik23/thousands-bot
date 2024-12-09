@@ -1,29 +1,21 @@
 package org.example.DictionaryCompiler.WordComplexityAnalyzers.Ngram.NgramPOJOs;
 
+import com.google.gson.annotations.SerializedName;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.List;
 
+@AllArgsConstructor
+@Setter
+@Getter
 public class NgramRequest {
+    @SerializedName("flags")
     private String flags;
+
+    @SerializedName("queries")
     private List<String> queries;
 
-    public NgramRequest(String flags, List<String> queries) {
-        this.flags = flags;
-        this.queries = queries;
-    }
 
-    public String getFlags() {
-        return flags;
-    }
-
-    public void setFlags(String flags) {
-        this.flags = flags;
-    }
-
-    public List<String> getQueries() {
-        return queries;
-    }
-
-    public void setQueries(List<String> queries) {
-        this.queries = queries;
-    }
 }
