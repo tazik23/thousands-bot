@@ -1,53 +1,59 @@
 package org.example.Translator;
 
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.*;
-import org.example.Translator.TranslationPOJOs.TranslationRequest;
-import org.example.Translator.TranslationPOJOs.TranslationResponse;
+import org.apache.http.HttpException;
+import org.example.Utils.BaseHttpClient;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
-public class YandexTranslateClient {
-    private final String ApiKey = System.getenv("API_KEY");
-    private final String folderId = System.getenv("FOLDER_ID");
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
-    private final OkHttpClient client = new OkHttpClient();
+public class YandexTranslateClient extends BaseHttpClient {
+    private static final String url = "https://translate.api.cloud.yandex.net/translate/v2/translate";
+    private static final  String ApiKey = System.getenv("API_KEY");
+    private static final String folderId = System.getenv("FOLDER_ID");
+    private static final String targetLanguage = "ru";
 
-    public TranslationResponse getTranslate(List<String> texts, String targetLanguage) throws IOException {
-        RequestBody body = formRequestBody(texts, targetLanguage);
-        Request request = new Request.Builder()
-                .url("https://translate.api.cloud.yandex.net/translate/v2/translate")
-                .header("Content-Type", "application/json")
-                .header("Authorization", ("Api-Key " + ApiKey))
-                .post(body)
-                .build();
+    List<String> sendRequest(List<String> texts) {
+        try {
+            Request request = createRequest(texts);
+            try (Response response = client.newCall(request).execute()) {
+                if (!response.isSuccessful()) {
+                    throw new HttpException("Request error: " + response.code());
+                }
+                if (response.body() == null) {
+                    throw new IOException("Response body is null");
+                }
+                String jsonResponse = response.body().string();
+                TranslationResponse translationResponse =
+                        gson.fromJson(jsonResponse, TranslationResponse.class);
+                List<Translation> translations = translationResponse.getTranslations();
 
-        return sendRequest(request);
-    }
-
-    private TranslationResponse sendRequest(Request request) throws IOException {
-        try (Response response = client.newCall(request).execute()) {
-            if (!response.isSuccessful()) {
-                throw new IOException("Request error: " + response.code());
+                return translations.stream()
+                        .map(Translation::getText)
+                        .collect(Collectors.toList());
             }
-            if (response.body() == null){
-                throw new IOException("Response body is null");
-            }
-
-            return objectMapper
-                    .readValue(response.body().string(), TranslationResponse.class);
+        } catch (Exception e) {
+            //todo: add logger
+            return null;
         }
     }
 
-
-    private RequestBody formRequestBody(List<String> texts, String targetLanguage) throws JsonProcessingException {
-        String json = objectMapper
-                .writeValueAsString(new TranslationRequest(folderId, texts, targetLanguage));
+    private Request createRequest(List<String> texts) throws JsonParseException {
+        TranslationRequest translationRequest = new TranslationRequest(folderId, texts, targetLanguage);
+        String jsonRequest = gson.toJson(translationRequest);
+        if(jsonRequest == null || jsonRequest.isEmpty()) {
+            throw new JsonParseException("Failed to serialize object");
+        }
         MediaType JSON = MediaType.get("application/json; charset=utf-8");
 
-        return RequestBody.create(json, JSON);
+        return new Request.Builder()
+                .url(url)
+                .header("Authorization", ("Api-Key " + ApiKey))
+                .post(RequestBody.create(jsonRequest, JSON))
+                .build();
     }
 }
