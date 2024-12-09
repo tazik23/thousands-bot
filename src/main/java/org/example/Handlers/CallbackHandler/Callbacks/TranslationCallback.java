@@ -41,7 +41,7 @@ public class TranslationCallback implements ICallback{
                 translatedArticle = translator.translateFile(selectedArticle);
                 session.setTranslatedArticle(translatedArticle);
             }
-            catch (IOException e){
+            catch (Exception e){
                 return List.of(new SendMessage(String.valueOf(id), Consts.ERROR));
             }
         }
