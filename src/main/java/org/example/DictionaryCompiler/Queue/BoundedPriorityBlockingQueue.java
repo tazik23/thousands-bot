@@ -28,14 +28,13 @@ public class BoundedPriorityBlockingQueue implements Iterable<PrioritizedWord> {
         return queue.poll();
     }
 
-
     public boolean isEmpty() {
         return queue.isEmpty();
     }
 
     @NotNull
     @Override
-    public Iterator iterator() {
+    public Iterator<PrioritizedWord> iterator() {
         return queue.iterator();
     }
 }
