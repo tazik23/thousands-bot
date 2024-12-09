@@ -20,8 +20,11 @@ public class ArticleFinder implements IArticleFinder {
     public List<Article> findArticlesByTheme(String selectedTheme) {
         List<Article> articles = new ArrayList<>();
         try {
+            String searchTheme =  selectedTheme.toLowerCase()
+                    .replace(" ","-")
+                    .replace("creek-software", "creek-story");
             Document doc = Jsoup.connect(BASE_URL).get();
-            Elements titles = doc.select("div.editor-category-posts."+ selectedTheme.toLowerCase().replace(" ", "-").replace("software", "story")+ " ul li a");
+            Elements titles = doc.select("div.editor-category-posts."+ searchTheme + " ul li a");
             for (Element title : titles) {
                 String articleTitle = title.text();
                 String articleLink = title.attr("href");
