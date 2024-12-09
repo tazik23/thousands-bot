@@ -30,4 +30,17 @@ class TranslatorTest {
 
         Assertions.assertEquals(result, translatedWord);
     }
+
+    @Test
+    void testTranslateList() throws IOException {
+        List<String> words = List.of("Hello world", "Goodbye DPI");
+        List<String> translatedWords = List.of("Привет, мир", "Прощай, DPI");
+
+        Mockito.when(mockClient.sendRequest(words))
+                .thenReturn(translatedWords);
+
+        List<String> result = translator.translate(words);
+
+        Assertions.assertEquals(result, translatedWords);
+    }
 }
