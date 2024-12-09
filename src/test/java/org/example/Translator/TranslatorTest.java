@@ -3,11 +3,11 @@ package org.example.Translator;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 class TranslatorTest {
     private YandexTranslateClient mockClient;
@@ -52,12 +52,29 @@ class TranslatorTest {
 
     @Test
     void testTranslateEmptyList() {
-        Assertions.assertThrows(IOException.class, () -> translator.translate(new ArrayList<>()));
+        Assertions.assertThrows(IOException.class, () -> translator.translate(Collections.emptyList()));
     }
 
     @Test
     void testTranslateNull() {
         List<String> nullList = null;
         Assertions.assertThrows(IOException.class, () -> translator.translate(nullList));
+    }
+
+    @Test
+    void testTranslateLargeText() throws IOException {
+        List<String> words = List.of(
+                "Hello ".repeat(1000), "world ".repeat(1000), "Hello world"
+        );
+        Mockito.when(mockClient.sendRequest(Mockito.anyList()))
+                .thenReturn(List.of("translated text"));
+
+        List<String> result = translator.translate(words);
+
+        Assertions.assertNotNull(result);
+        Assertions.assertFalse(result.isEmpty());
+
+        Mockito.verify(mockClient, Mockito.times(2))
+                .sendRequest(Mockito.anyList());
     }
 }
