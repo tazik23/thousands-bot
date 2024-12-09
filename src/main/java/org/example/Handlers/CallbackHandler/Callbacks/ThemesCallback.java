@@ -113,6 +113,7 @@ public class ThemesCallback implements ICallback {
                 .replace("=", "\\=")
                 .replace("!", "\\!")
                 .replace("_", "\\_")
-                .replace("*", "\\*");
+                .replace("*", "\\*")
+                .replace(".","\\.");
     }
 }
