@@ -1,5 +1,6 @@
 package org.example.DictionaryCompiler;
 
+import lombok.AllArgsConstructor;
 import org.example.DictionaryCompiler.Queue.BoundedPriorityBlockingQueue;
 import org.example.DictionaryCompiler.Queue.PrioritizedWord;
 import org.example.DictionaryCompiler.WordComplexityAnalyzers.WordFrequencyAnalyzer;
@@ -9,33 +10,34 @@ import org.example.Utils.io.DocxReader;
 import org.example.Utils.io.DocxWriter;
 
 import java.io.File;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
+@AllArgsConstructor
 public class DictionaryCompiler implements IDictionaryCompiler{
     private final TextTokenizer tokenizer;
     private final WordLengthAnalyzer lengthAnalyzer;
     private final WordFrequencyAnalyzer frequencyAnalyzer;
     private final ITranslator translator;
 
-    public DictionaryCompiler(TextTokenizer tokenizer, WordLengthAnalyzer lengthAnalyzer, WordFrequencyAnalyzer frequencyAnalyzer, ITranslator translator) {
-        this.tokenizer = tokenizer;
-        this.lengthAnalyzer = lengthAnalyzer;
-        this.frequencyAnalyzer = frequencyAnalyzer;
-        this.translator = translator;
-    }
-
     @Override
     public File compileDictionary(File file) {
-        File dictionary = new File("Dictionary" + file.getName());
+        File dictionary = new File("Dictionary_" + file.getName());
         BoundedPriorityBlockingQueue queue = getComplexWords(file);
 
+
         try(DocxWriter writer = new DocxWriter(dictionary)) {
+            List<String> words = new ArrayList<>();
             for(var prioritizedWord : queue) {
                 String word = prioritizedWord.getWord();
-                writer.writeParagraph(word + " - " + translator.translate(word));
+                words.add(word);
+            }
+            List<String> translations = translator.translate(words);
+
+            Iterator<PrioritizedWord> it1 = queue.iterator();
+            Iterator<String> it2 = translations.iterator();
+
+            while (it1.hasNext() && it2.hasNext()) {
+                writer.writeParagraph(it1.next().getWord() + "-" + it2.next());
             }
             writer.save();
             return dictionary;
