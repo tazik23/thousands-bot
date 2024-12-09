@@ -32,6 +32,11 @@ class TranslatorTest {
     }
 
     @Test
+    void testTranslateEmptyString() {
+        Assertions.assertThrows(IOException.class, () -> translator.translate(""));
+    }
+
+    @Test
     void testTranslateList() throws IOException {
         List<String> words = List.of("Hello world", "Goodbye DPI");
         List<String> translatedWords = List.of("Привет, мир", "Прощай, DPI");
@@ -43,4 +48,5 @@ class TranslatorTest {
 
         Assertions.assertEquals(result, translatedWords);
     }
+
 }
