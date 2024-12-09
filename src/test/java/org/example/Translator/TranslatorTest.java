@@ -55,4 +55,9 @@ class TranslatorTest {
         Assertions.assertThrows(IOException.class, () -> translator.translate(new ArrayList<>()));
     }
 
+    @Test
+    void testTranslateNull() {
+        List<String> nullList = null;
+        Assertions.assertThrows(IOException.class, () -> translator.translate(nullList));
+    }
 }
