@@ -7,5 +7,5 @@ import java.util.List;
 public interface ITranslator {
     String translate(String text) throws IOException;
     List<String> translate(List<String> text) throws IOException;
-    File translateFile(File file) throws IOException;
+    File translateFile(File file) throws Exception;
 }
