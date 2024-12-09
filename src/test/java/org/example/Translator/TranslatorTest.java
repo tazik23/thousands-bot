@@ -6,6 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.mockito.Mockito;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 class TranslatorTest {
@@ -47,6 +48,11 @@ class TranslatorTest {
         List<String> result = translator.translate(words);
 
         Assertions.assertEquals(result, translatedWords);
+    }
+
+    @Test
+    void testTranslateEmptyList() {
+        Assertions.assertThrows(IOException.class, () -> translator.translate(new ArrayList<>()));
     }
 
 }
