@@ -3,6 +3,8 @@ import org.example.Bot.ThousandsBot;
 import org.example.DictionaryCompiler.DictionaryCompiler;
 import org.example.DictionaryCompiler.IDictionaryCompiler;
 import org.example.DictionaryCompiler.TextTokenizer;
+import org.example.DictionaryCompiler.WordComplexityAnalyzers.IAnalyzer;
+import org.example.DictionaryCompiler.WordComplexityAnalyzers.WordComplexityAnalyzer;
 import org.example.DictionaryCompiler.WordComplexityAnalyzers.WordFrequencyAnalyzer;
 import org.example.DictionaryCompiler.WordComplexityAnalyzers.WordLengthAnalyzer;
 import org.example.Handlers.CallbackHandler.CallbackHandler;
@@ -23,24 +25,27 @@ import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 
+import java.util.List;
 import java.util.Map;
 
 public class Main {
     public static void main(String[] args) {
+        System.setProperty("java.util.concurrent.ForkJoinPool.common.parallelism", "20");
         YandexTranslateClient yandexTranslateClient = new YandexTranslateClient();
 
         ISessionRepository sessionRepository = new InMemorySessionRepository();
 
         TextTokenizer tokenizer = new TextTokenizer();
-        WordFrequencyAnalyzer frequencyAnalyzer = new WordFrequencyAnalyzer();
-        WordLengthAnalyzer lengthAnalyzer = new WordLengthAnalyzer();
+        IAnalyzer frequencyAnalyzer = new WordFrequencyAnalyzer();
+        IAnalyzer lengthAnalyzer = new WordLengthAnalyzer();
+        IAnalyzer analyzer = new WordComplexityAnalyzer(List.of(frequencyAnalyzer, lengthAnalyzer));
 
         ITranslator translator = new Translator(yandexTranslateClient);
         IArticleParser articleParser = new ArticleParser();
         ThemesFinder themesFinder = new ThemesFinder();
         IArticleFinder articleFinder = new ArticleFinder();
         IDictionaryCompiler dictionaryCompiler = new DictionaryCompiler
-                (tokenizer, lengthAnalyzer, frequencyAnalyzer, new Translator(yandexTranslateClient));
+                (tokenizer, analyzer, new Translator(yandexTranslateClient));
 
         Map<CallbackType, ICallback> callbacks = Map.of(
                 CallbackType.ARTICLE, new ArticleCallback(sessionRepository, articleParser,articleFinder),

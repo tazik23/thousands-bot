@@ -95,6 +95,7 @@ public class ThemesCallback implements ICallback {
         InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
         inlineKeyboardMarkup.setKeyboard(rowList);
         sendMessage.setReplyMarkup(inlineKeyboardMarkup);
+        sendMessage.disableWebPagePreview();
 
         return List.of(sendMessage);
     }
@@ -113,6 +114,7 @@ public class ThemesCallback implements ICallback {
                 .replace("=", "\\=")
                 .replace("!", "\\!")
                 .replace("_", "\\_")
-                .replace("*", "\\*");
+                .replace("*", "\\*")
+                .replace(".", "\\.");
     }
 }
