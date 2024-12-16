@@ -1,10 +1,11 @@
 package org.example.Translator;
 
 import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import okhttp3.*;
 import org.apache.http.HttpException;
 import org.example.Utils.BaseHttpClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.List;
@@ -16,6 +17,8 @@ public class YandexTranslateClient extends BaseHttpClient {
     private static final  String ApiKey = System.getenv("API_KEY");
     private static final String folderId = System.getenv("FOLDER_ID");
     private static final String targetLanguage = "ru";
+
+    private static final Logger logger = LoggerFactory.getLogger(YandexTranslateClient.class);
 
     List<String> sendRequest(List<String> texts) {
         try {
@@ -37,7 +40,7 @@ public class YandexTranslateClient extends BaseHttpClient {
                         .collect(Collectors.toList());
             }
         } catch (Exception e) {
-            //todo: add logger
+            logger.debug(e.getMessage());
             return null;
         }
     }

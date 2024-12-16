@@ -3,6 +3,7 @@ package org.example.DictionaryCompiler;
 import lombok.AllArgsConstructor;
 import org.example.DictionaryCompiler.Queue.BoundedPriorityBlockingQueue;
 import org.example.DictionaryCompiler.Queue.PrioritizedWord;
+import org.example.DictionaryCompiler.WordComplexityAnalyzers.IAnalyzer;
 import org.example.DictionaryCompiler.WordComplexityAnalyzers.WordFrequencyAnalyzer;
 import org.example.DictionaryCompiler.WordComplexityAnalyzers.WordLengthAnalyzer;
 import org.example.Translator.ITranslator;
@@ -13,10 +14,10 @@ import java.io.File;
 import java.util.*;
 
 @AllArgsConstructor
-public class DictionaryCompiler implements IDictionaryCompiler{
+public class DictionaryCompiler implements IDictionaryCompiler {
+    private final static int WORD_LIMIT = 100;
     private final TextTokenizer tokenizer;
-    private final WordLengthAnalyzer lengthAnalyzer;
-    private final WordFrequencyAnalyzer frequencyAnalyzer;
+    private final IAnalyzer analyzer;
     private final ITranslator translator;
 
     @Override
@@ -32,7 +33,6 @@ public class DictionaryCompiler implements IDictionaryCompiler{
                 words.add(word);
             }
             List<String> translations = translator.translate(words);
-
             Iterator<PrioritizedWord> it1 = queue.iterator();
             Iterator<String> it2 = translations.iterator();
 
@@ -40,6 +40,7 @@ public class DictionaryCompiler implements IDictionaryCompiler{
                 writer.writeParagraph(it1.next().getWord() + "-" + it2.next());
             }
             writer.save();
+
             return dictionary;
         }
         catch (Exception e) {
@@ -49,7 +50,7 @@ public class DictionaryCompiler implements IDictionaryCompiler{
 
     private BoundedPriorityBlockingQueue getComplexWords(File file) {
         BoundedPriorityBlockingQueue queue = new BoundedPriorityBlockingQueue(150);
-        Set<String> tokens = Collections.synchronizedSet(new HashSet<String>());
+        Set<String> tokens = Collections.synchronizedSet(new HashSet<>());
 
         try(DocxReader reader = new DocxReader(file)) {
             List<String> paragraphs = reader.read();
@@ -58,20 +59,36 @@ public class DictionaryCompiler implements IDictionaryCompiler{
                     .parallel()
                     .forEach(p -> tokens.addAll(tokenizer.tokenize(p)));
 
-            tokens.stream()
-                    .parallel()
-                    .filter(t -> t != null && t.length() > 2)
-                    .forEach(t -> {
-                        double value = frequencyAnalyzer.analyze(t) + lengthAnalyzer.analyze(t);
-                        queue.add(new PrioritizedWord(t, value));
-                    });
+            var splitTokens = splitByWordLimit(new ArrayList<>(
+                    tokens)
+            );
 
+            splitTokens.stream()
+                    .flatMap(group -> analyzer.analyze(group).entrySet().stream()
+                            .map(entry -> new PrioritizedWord(entry.getKey(), entry.getValue())))
+                    .forEach(queue::add);
             return queue;
 
         }
         catch (Exception e) {
-
+            return null;
         }
-        return null;
+    }
+    public static List<List<String>> splitByWordLimit(List<String> words) {
+        List<List<String>> result = new ArrayList<>();
+        List<String> currentList = new ArrayList<>();
+
+        for (String word : words) {
+            currentList.add(word);
+            if (currentList.size() == WORD_LIMIT) {
+                result.add(currentList);
+                currentList = new ArrayList<>();
+            }
+        }
+        if (!currentList.isEmpty()) {
+            result.add(currentList);
+        }
+
+        return result;
     }
 }
