@@ -66,16 +66,16 @@ public class Translator implements ITranslator {
 
         for (String str : text) {
             int strLength = str.length();
-            if(currentLength + strLength > CHARACTER_LIMIT) {
+            if (currentLength + strLength > CHARACTER_LIMIT) {
                 result.add(currentList);
-                currentList.clear();
+                currentList = new ArrayList<>();
                 currentLength = 0;
-            }
-            else {
+            } else {
                 currentList.add(str);
                 currentLength += strLength;
             }
         }
+
         if (!currentList.isEmpty()) {
             result.add(currentList);
         }
